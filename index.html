@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Currency Converter</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --accent: #2563eb;
+      --muted: #6b7280;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+      object-fit: cover;
+      box-sizing: border-box;
+      background: linear-gradient(120deg, rgb(234, 234, 247),rgb(184, 184, 238), rgb(182, 27, 238));
+      background-size: 400% 400%;
+      animation: gradientMove 10s ease-in-out infinite;
+    }
+
+    @keyframes gradientMove {
+      0% {
+        background-position: 0% 50%;
+      }
+      25% {
+        background-position: 50% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      75% {
+        background-position: 50% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card);
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+      padding: 28px 18px 22px 18px;
+      box-sizing: border-box;
+      margin: 0 auto;
+      box-shadow: 10px 10px 10px rgba(0,0,0,0.3);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 1.5rem;
+      text-align: center;
+      padding: 0;
+    }
+
+    p.lead {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 1rem;
+      text-align: center;
+      padding: 0;
+    }
+
+    /* Amount input full width */
+    .amount-block {
+      margin-bottom: 14px;
+    }
+    .amount-block label {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #222;
+    }
+    #amount {
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: 4px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    label {
+      font-size: 12px;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    select,
+    input[type="number"] {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #e6e9ef;
+      font-size: 15px;
+      background: transparent;
+      box-sizing: border-box;
+    }
+
+    input[type="number"] {
+      appearance: textfield;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .result {
+      padding: 14px;
+      border-radius: 10px;
+      background: linear-gradient(90deg, rgba(37, 99, 235, 0.06), rgba(59, 130, 246, 0.03));
+      border: 1px solid rgba(37, 99, 235, 0.06);
+      margin-bottom: 10px;
+    }
+
+    .big {
+      font-size: 22px;
+      margin: 0 0 6px;
+      word-break: break-all;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: #fff;
+      border: 0;
+      padding: 10px 24px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.12);
+      font-size: 1rem;
+    }
+    button:hover{
+      background: #1e40af;
+    }
+
+    small {
+      color: var(--muted)
+    }
+
+    @media (max-width: 640px) {
+      .card {
+        max-width: 98vw;
+        padding: 12px 4vw 16px 4vw;
+      }
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .controls {
+        flex-direction: column;
+        gap: 8px;
+        align-items: stretch;
+      }
+      h1, p.lead {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Currency Converter</h1>
+    <p class="lead">Convert amounts between currencies using live rates.</p>
+
+    <div class="amount-block">
+      <label for="amount">Amount</label>
+      <input id="amount" type="number" min="0" step="any" value="1" />
+    </div>
+    <div class="grid">
+      <div>
+        <label for="from">From</label>
+        <select id="from"></select>
+      </div>
+      <div>
+        <label for="to">To</label>
+        <select id="to"></select>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="convert" class="primary" style="width: 100%;">Convert</button>
+    </div>
+
+    <div class="result">
+      <p class="big" id="output">—</p>
+      <p class="muted" id="rate-info">—</p>
+    </div>
+    
+  </main>
+  <script>
+    const API_BASE = 'https://api.exchangerate.host';
+    const ACCESS_KEY = '731576b72e64d4945e5f36eee525229d';
+    const fromEl = document.getElementById('from');
+    const toEl = document.getElementById('to');
+    const amountEl = document.getElementById('amount');
+    const outputEl = document.getElementById('output');
+    const rateInfoEl = document.getElementById('rate-info');
+    const convertBtn = document.getElementById('convert');
+
+    // fallback currencies in case API fails
+    const fallbackSymbols = {
+      USD: { description: "US Dollar" },
+      EUR: { description: "Euro" },
+      INR: { description: "Indian Rupee" },
+      GBP: { description: "British Pound" },
+      JPY: { description: "Japanese Yen" },
+      AUD: { description: "Australian Dollar" },
+      CAD: { description: "Canadian Dollar" }
+    };
+
+    async function fetchSymbols() {
+      try {
+        const r = await fetch(`${API_BASE}/symbols?access_key=${ACCESS_KEY}`);
+        const j = await r.json();
+        if (j && j.symbols && Object.keys(j.symbols).length > 0) {
+          return j.symbols;
+        }
+        throw new Error("Empty symbol list");
+      } catch {
+        // fallback to hardcoded symbols
+        return fallbackSymbols;
+      }
+    }
+
+    function populateSelects(symbols) {
+      fromEl.innerHTML = '';
+      toEl.innerHTML = '';
+      const keys = Object.keys(symbols).sort();
+      keys.forEach(k => {
+        const name = symbols[k].description || k;
+        fromEl.appendChild(new Option(`${k} — ${name}`, k));
+        toEl.appendChild(new Option(`${k} — ${name}`, k));
+      });
+      fromEl.value = 'USD';
+      toEl.value = 'INR';
+    }
+
+    async function convert() {
+      const from = fromEl.value;
+      const to = toEl.value;
+      const amount = parseFloat(amountEl.value) || 0;
+      if (!from || !to) { outputEl.textContent = 'Select currencies.'; return; }
+
+      try {
+        convertBtn.disabled = true;
+        convertBtn.textContent = 'Converting…';
+        const url = `${API_BASE}/convert?access_key=${ACCESS_KEY}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&amount=${encodeURIComponent(amount)}`;
+        const resp = await fetch(url);
+        const data = await resp.json();
+
+        if (data && typeof data.result !== 'undefined') {
+          outputEl.textContent = `${data.result} ${to}`;
+          const rate = data.info && data.info.rate ? data.info.rate : (data.result / (amount || 1));
+          rateInfoEl.textContent = `1 ${from} = ${rate} ${to}  •  (rate date: ${data.date || '—'})`;
+        } else {
+          outputEl.textContent = 'Conversion failed — try again.';
+          rateInfoEl.textContent = JSON.stringify(data);
+        }
+      } catch (err) {
+        outputEl.textContent = 'Network or API error.';
+        rateInfoEl.textContent = err.message || String(err);
+      } finally {
+        convertBtn.disabled = false;
+        convertBtn.textContent = 'Convert';
+      }
+    }
+
+    convertBtn.addEventListener('click', convert);
+    amountEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') convert(); });
+
+    async function init() {
+      const symbols = await fetchSymbols();
+      populateSelects(symbols);
+      convert();
+    }
+    init();
+  </script>
+</body>
+</html>
