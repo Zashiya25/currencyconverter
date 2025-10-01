@@ -1,8 +1,8 @@
-#🌍  Currency Converter
+# 🌍  Currency Converter
 A simple and modern Currency Converter Web App that allows users to convert amounts between currencies using live exchange rates.
 The app is responsive, lightweight, and styled with a smooth animated gradient background.
 
-##🚀 Features
+## 🚀 Features
 
 🌐 Live exchange rates powered by ExchangeRate API
 
@@ -16,7 +16,7 @@ The app is responsive, lightweight, and styled with a smooth animated gradient b
 
 🛡 Fallback currency list (works even if API fails)
 
-##📸 Preview
+## 📸 Preview
 
 ![image alt](image_url)
 
